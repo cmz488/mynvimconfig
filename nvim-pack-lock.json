@@ -1,0 +1,48 @@
+{
+  "plugins": {
+    "blink.cmp": {
+      "rev": "8219b58f1c11a2fb1644d3c7116c509fa8348ec0",
+      "src": "https://github.com/Saghen/blink.cmp"
+    },
+    "blink.lib": {
+      "rev": "fd9a48ebbe6ec30d5dfcc5b42c243941ccdca1aa",
+      "src": "https://github.com/Saghen/blink.lib"
+    },
+    "fzf-lua": {
+      "rev": "d5c12c6d72ed84554f0f8dacb84f20da094b6a2d",
+      "src": "https://github.com/ibhagwan/fzf-lua"
+    },
+    "lualine.nvim": {
+      "rev": "221ce6b2d999187044529f49da6554a92f740a96",
+      "src": "https://github.com/nvim-lualine/lualine.nvim"
+    },
+    "nvim-dap": {
+      "rev": "cfa2d58f4537aca6ca83e2de1a0d9f1491121264",
+      "src": "https://github.com/mfussenegger/nvim-dap"
+    },
+    "nvim-tree.lua": {
+      "rev": "478c69c0fe253caea88de9c5e138bfa77395a59a",
+      "src": "https://github.com/nvim-tree/nvim-tree.lua"
+    },
+    "nvim-treesitter": {
+      "rev": "910fdf6f49e9dee7e7257c7d11a76b040fdfb9de",
+      "src": "https://github.com/nvim-treesitter/nvim-treesitter"
+    },
+    "nvim-web-devicons": {
+      "rev": "58447c1fca354bbf184425e4a8d01deecbd6f3c4",
+      "src": "https://github.com/nvim-tree/nvim-web-devicons"
+    },
+    "overseer.nvim": {
+      "rev": "a93d9f6d6defdac4bcd6d2c8ba988650e42e0a0e",
+      "src": "https://github.com/stevearc/overseer.nvim"
+    },
+    "tokyonight.nvim": {
+      "rev": "cdc07ac78467a233fd62c493de29a17e0cf2b2b6",
+      "src": "https://github.com/folke/tokyonight.nvim"
+    },
+    "which-key.nvim": {
+      "rev": "3aab2147e74890957785941f0c1ad87d0a44c15a",
+      "src": "https://github.com/folke/which-key.nvim"
+    }
+  }
+}
