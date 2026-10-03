@@ -47,4 +47,6 @@ opt.splitbelow = true
 vim.g.mapleader = " "
 vim.g.maplocalleader = "\\"
 -- 保留隐藏buffer
-vim.opt.hidden = true 
+vim.opt.hidden = true
+
+vim.opt.formatoptions:remove({ "r", "o" })

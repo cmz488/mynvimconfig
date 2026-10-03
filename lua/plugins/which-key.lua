@@ -23,5 +23,6 @@ wk.add({
   { "<leader>c", group = "代码" },
   { "<leader>d", group = "调试" },
   { "<leader>r", group = "运行与构建" },
+  { "<leader>t", group = "切换" },
   { "<leader>w", group = "窗口" },
 })

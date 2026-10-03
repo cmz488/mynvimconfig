@@ -1,6 +1,7 @@
 local map = vim.keymap.set
 local fzf = require("fzf-lua")
 local tree = require("nvim-tree.api")
+local Snacks = require("snacks")
 -- 文件
 map("n", "<leader>fs", "<cmd>w<cr>", {
     desc = "保存文件",
@@ -31,16 +32,27 @@ map("n", "<leader>wv", "<cmd>vsplit<cr>", {
 map("n", "<leader>wh", "<cmd>split<cr>", {
     desc = "水平分屏",
 })
+-- snacks插件相关
+map("n", "<leader><leader>", function()
+    fzf.files()
+end, { desc = "搜索文件" })
 
--- fzf
-map("n", "<leader>ff", fzf.files, {
-    desc = "查找文件",
-})
-
-map("n", "<leader>fg", fzf.live_grep, {
-    desc = "全局文本搜索",
-})
-
+-- 全局文本搜索
+map("n", "<leader>fg", function()
+    fzf.live_grep()
+end, { desc = "全局文本搜索" })
+-- LSP 引用搜索
+map("n", "gr", function()
+    Snacks.picker.lsp_references()
+end, { desc = "查找引用" })
+-- 智能文件搜索
+map("n", "<leader>fs", function()
+    Snacks.picker.smart()
+end, { desc = "智能搜索" })
+-- LSP 定义跳转
+map("n", "gd", function()
+    Snacks.picker.lsp_definitions()
+end, { desc = "跳转定义" })
 map("n", "<leader>fw", fzf.grep_cword, {
     desc = "搜索光标所在单词",
 })
@@ -58,9 +70,6 @@ map("n", "<leader>gs", fzf.git_status, {
 map("n", "<leader>gc", fzf.git_commits, {
     desc = "Git 提交记录",
 })
-map("n", "<leader>ga", "<cmd>!git add .", { desc = "Git add" })
-
-map("n", "<leader>gc", "<cmd>!git commit -m\"\"", { desc = "Git commit" })
 -- 其他
 map("n", "<leader>fh", fzf.helptags, {
     desc = "搜索帮助文档",
@@ -100,4 +109,4 @@ map("n", "<S-l>", "<cmd>BufferLineCycleNext<cr>",
 map("n", "<C-s>", "<cmd>w<cr>", { desc = "文件保存" })
 
 
-map("n", "<leader>bp", "<cmd>BufferLinePick<cr>", { desc = "通过首字母自动跳转到对应buffer" })
+map("n", "<leader>bb", "<cmd>BufferLinePick<cr>", { desc = "通过首字母自动跳转到对应buffer" })
