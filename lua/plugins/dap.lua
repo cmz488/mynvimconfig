@@ -13,6 +13,7 @@ local function setup_debugging()
     })
 
     local dap = require("dap")
+    local cleanup = require("plugins.dap-cleanup")
 
     -- 停止/切换栈帧时优先使用源码窗口。默认 uselast 可能选中另一个 dapui
     -- 面板；其 force_buffers 会恢复面板内容，导致源码行号被用于短面板而越界。
@@ -219,11 +220,11 @@ local function setup_debugging()
     vim.keymap.set('n', '<F8>', dap.step_over, { desc = ' Step over' })
     vim.keymap.set('n', '<leader>dO', dap.step_out, { desc = ' Step out' })
     vim.keymap.set('n', '<F9>', dap.step_out, { desc = ' Step out' })
-    vim.keymap.set('n', '<leader>dq', dap.close, { desc = 'DAP: Close session' })
+    vim.keymap.set('n', '<leader>dq', cleanup.stop, { desc = 'DAP: Stop and clean sessions' })
     vim.keymap.set('n', '<leader>dr', dap.restart_frame, { desc = 'DAP: Restart frame' })
     vim.keymap.set('n', '<F6>', dap.restart, { desc = 'DAP: Start over' })
-    vim.keymap.set('n', '<leader>dQ', dap.terminate, { desc = ' Terminate session' })
-    vim.keymap.set('n', '<F4>', dap.terminate, { desc = ' Terminate session' })
+    vim.keymap.set('n', '<leader>dQ', cleanup.stop, { desc = 'DAP: Stop and clean sessions' })
+    vim.keymap.set('n', '<F4>', cleanup.stop, { desc = 'DAP: Stop and clean sessions' })
 
     vim.keymap.set('n', '<leader>dc', dap.run_to_cursor, { desc = 'DAP: Run to Cursor' })
     vim.keymap.set('n', '<leader>dR', dap.repl.toggle, { desc = 'DAP: Toggle REPL' })
@@ -237,6 +238,7 @@ local function setup_debugging()
     vim.keymap.set('n', '<leader>dD', dap.clear_breakpoints, { desc = 'DAP: Clear Breakpoints' })
 
     require("plugins.dapui").setup()
+    cleanup.setup()
 end
 
 vim.api.nvim_create_autocmd("FileType", {

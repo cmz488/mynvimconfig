@@ -7,14 +7,14 @@ function M.setup()
     local dap = require("dap")
     local dapui = require("dapui")
 
-    -- 开始调试时显示 UI；结束后保留终端输出，用 <F1>/<leader>du 手动关闭。
+    -- 开始调试时显示 UI；最终关闭与数据清理交给 dap-cleanup 的 on_close 钩子。
     dap.listeners.before.attach.dapui_config = function()
         dapui.open({ reset = true })
     end
     dap.listeners.before.launch.dapui_config = function()
         dapui.open({ reset = true })
     end
-    -- 也清理重新执行 setup 时可能遗留的自动关闭监听器。
+    -- 不在 exited 时抢先清理：此时连接可能仍有效，或会话正在 restart。
     dap.listeners.before.event_terminated.dapui_config = nil
     dap.listeners.before.event_exited.dapui_config = nil
 

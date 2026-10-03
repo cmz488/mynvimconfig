@@ -17,6 +17,8 @@ local ok, err = xpcall(function()
         "  int value;",
         "  if (!(std::cin >> value)) return 1;",
         '  std::cout << "RESULT=" << value * 2 << std::endl;',
+        "  int finish;",
+        "  if (!(std::cin >> finish)) return 1;",
         "  return 0;",
         "}",
     }, source)
@@ -52,7 +54,7 @@ local ok, err = xpcall(function()
     local function console_text(buf)
         return table.concat(api.nvim_buf_get_lines(buf, 0, -1, false), "\n")
     end
-    -- Re-launch as well: dapui retains the terminal buffer between sessions.
+    -- Re-launch as well: each ended session must release its terminal buffer.
     for _, value in ipairs({ 21, 22 }) do
         exit_code = nil
         dap.run(config)
@@ -71,6 +73,14 @@ local ok, err = xpcall(function()
         local job = assert(vim.b[console].terminal_job_id)
         vim.fn.chansend(job, tostring(value) .. "\n")
         assert(
+            vim.wait(2000, function()
+                return console_text(console):find("RESULT=" .. value * 2, 1, true) ~= nil
+            end),
+            "Program output is missing from Console"
+        )
+        assert(console_visible(console), "UI closed while the program was still running")
+        vim.fn.chansend(job, "0\n")
+        assert(
             vim.wait(8000, function()
                 return exit_code ~= nil
             end),
@@ -79,17 +89,11 @@ local ok, err = xpcall(function()
         assert(exit_code == 0, "Program failed to read stdin")
         assert(
             vim.wait(2000, function()
-                return console_text(console):find("RESULT=" .. value * 2, 1, true) ~= nil
+                return dap.session() == nil and not api.nvim_buf_is_valid(console)
             end),
-            "Program output is missing from Console"
+            "Session did not release the program terminal"
         )
-        assert(console_visible(console), "UI closed before the final program output could be read")
-        assert(
-            vim.wait(2000, function()
-                return dap.session() == nil
-            end),
-            "Session did not close"
-        )
+        assert(not console_visible(console), "Program terminal window remains after cleanup")
     end
 end, debug.traceback)
 
@@ -106,6 +110,6 @@ if not ok then
     io.stderr:write(err .. "\n")
     vim.cmd("cquit 1")
 else
-    print("PASS: Console terminal accepts stdin, shows stdout and preserves final output")
+    print("PASS: Console accepts stdin, shows stdout, then releases its terminal; re-launch works")
     vim.cmd("qa!")
 end
