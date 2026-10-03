@@ -8,6 +8,10 @@
       "rev": "fd9a48ebbe6ec30d5dfcc5b42c243941ccdca1aa",
       "src": "https://github.com/Saghen/blink.lib"
     },
+    "bufferline.nvim": {
+      "rev": "655133c3b4c3e5e05ec549b9f8cc2894ac6f51b3",
+      "src": "https://github.com/akinsho/bufferline.nvim"
+    },
     "fzf-lua": {
       "rev": "d5c12c6d72ed84554f0f8dacb84f20da094b6a2d",
       "src": "https://github.com/ibhagwan/fzf-lua"

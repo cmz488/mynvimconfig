@@ -21,23 +21,23 @@ opt.ignorecase = true
 opt.smartcase = true
 
 -- 系统剪贴板
-vim.g.clipboard = {                                                                                                                                      
-     name = "wl-clipboard",                                                                                                                                 
-                                                                                                                                                            
-     copy = {                                                                                                                                               
-       ["+"] = { "wl-copy" },                                                                                                                               
-       ["*"] = { "wl-copy", "--primary" },                                                                                                                  
-     },                                                                                                                                                     
-                                                                                                                                                            
-     paste = {                                                                                                                                              
-       ["+"] = { "wl-paste", "--no-newline" },                                                                                                              
-       ["*"] = { "wl-paste", "--primary", "--no-newline" },                                                                                                 
-     },                                                                                                                                                     
-                                                                                                                                                            
-     cache_enabled = 0,                                                                                                                                     
-   }                                                                                                                                                        
-                                                                                                                                                            
-   vim.opt.clipboard = "unnamedplus"
+vim.g.clipboard = {
+    name = "wl-clipboard",
+
+    copy = {
+        ["+"] = { "wl-copy" },
+        ["*"] = { "wl-copy", "--primary" },
+    },
+
+    paste = {
+        ["+"] = { "wl-paste", "--no-newline" },
+        ["*"] = { "wl-paste", "--primary", "--no-newline" },
+    },
+
+    cache_enabled = 0,
+}
+
+vim.opt.clipboard = "unnamedplus"
 
 -- 分屏
 opt.splitright = true
@@ -46,3 +46,5 @@ opt.splitbelow = true
 -- Leader
 vim.g.mapleader = " "
 vim.g.maplocalleader = "\\"
+-- 保留隐藏buffer
+vim.opt.hidden = true 
