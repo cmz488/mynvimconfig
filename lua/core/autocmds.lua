@@ -92,19 +92,58 @@ vim.api.nvim_create_autocmd("BufEnter",
 
 local saf_group = vim.api.nvim_create_augroup("AutoSaveAndFormat", { clear = true })
 
+-- 自动保存/自动格式化只应作用于普通文件缓冲区。
+-- 特殊缓冲区（nvim-tree、终端、quickfix、无名缓冲区）若被写入，轻则在
+-- 工作目录留下垃圾文件，重则与插件内部缓冲区重名（nvim-tree 的缓冲区名
+-- 形如 NvimTree_<tab>），导致插件初始化失败（E95）。
+local function is_file_buffer(buf)
+    if not vim.api.nvim_buf_is_valid(buf) then
+        return false
+    end
+
+    -- 跳过 nofile/terminal/prompt/quickfix 等特殊缓冲区
+    if vim.bo[buf].buftype ~= "" then
+        return false
+    end
+
+    local name = vim.api.nvim_buf_get_name(buf)
+
+    -- 跳过无名缓冲区
+    if name == "" then
+        return false
+    end
+
+    -- 跳过与 nvim-tree 内部缓冲区同名（NvimTree_<数字>）的文件
+    if vim.fn.fnamemodify(name, ":t"):match("^NvimTree_%d+$") then
+        return false
+    end
+
+    return true
+end
+
 vim.api.nvim_create_autocmd("BufLeave", {
-  group = saf_group,
-  pattern = "*",
-  callback = function()
-    vim.cmd("silent! update")
-  end,
-  desc = "离开缓冲区时自动格式化并保存",
+    group = saf_group,
+    pattern = "*",
+    callback = function(args)
+        if not is_file_buffer(args.buf) or not vim.bo[args.buf].modified then
+            return
+        end
+        vim.cmd("silent! update")
+    end,
+    desc = "离开缓冲区时自动保存",
 })
 vim.api.nvim_create_autocmd("BufWritePre", {
     group = saf_group,
-  pattern = "*",
-  callback = function()
-    vim.lsp.buf.format({ async = false })
-  end,
-  desc = "保存前自动格式化",
+    pattern = "*",
+    callback = function(args)
+        if not is_file_buffer(args.buf) then
+            return
+        end
+        -- 没有 LSP 客户端时跳过，避免每次保存都弹告警
+        if #vim.lsp.get_clients({ bufnr = args.buf }) == 0 then
+            return
+        end
+        vim.lsp.buf.format({ async = false, bufnr = args.buf })
+    end,
+    desc = "保存前自动格式化",
 })
