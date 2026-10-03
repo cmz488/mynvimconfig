@@ -68,13 +68,16 @@ local function setup_debugging()
 
     vim.list_extend(dap.configurations.cpp, {
         {
-            name = "Launch (codelldb)",
+            name = "Launch (codelldb, terminal)",
             type = "codelldb",
             request = "launch",
             program = function()
                 return vim.fn.input("Path to executable: ", vim.fn.getcwd() .. "/", "file")
             end,
             cwd = "${workspaceFolder}",
+            -- 原生 GDB DAP 不发 runInTerminal 请求；需要 std::cin 等交互输入时
+            -- 选择此项。codelldb 的 terminal 字段会把程序终端交给 dapui Console。
+            terminal = "integrated",
             stopOnEntry = false,
         },
         {
