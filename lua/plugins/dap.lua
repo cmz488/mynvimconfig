@@ -14,6 +14,11 @@ local function setup_debugging()
 
     local dap = require("dap")
 
+    -- 停止/切换栈帧时优先使用源码窗口。默认 uselast 可能选中另一个 dapui
+    -- 面板；其 force_buffers 会恢复面板内容，导致源码行号被用于短面板而越界。
+    -- 未显示的源码用新 split 打开，不占用 Watches/Breakpoints 等面板。
+    dap.defaults.fallback.switchbuf = "useopen,split"
+
     -- NOTE: configure adapters
     -- C/C++ 统一使用 gdb 自带的 DAP 服务器（gdb >= 14 的 --interpreter=dap），
     -- 不再依赖 cpptools 的 cppdbg / OpenDebugAD7（它不随系统包分发，且 MI 专有字段
