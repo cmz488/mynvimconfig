@@ -41,6 +41,16 @@ local function setup_debugging()
         -- 否则它会以普通 CLI 模式启动，永远不会说 DAP 协议。
         args = { "--interpreter=dap", "--eval-command", "set print pretty on" },
     }
+    dap.adapters["rust-gdb"] = {
+        type = "executable",
+        command = "rust-gdb",
+        args = { "--interpreter=dap", "--eval-command", "set print pretty on" }
+    }
+    dap.adapters.arm_gdb = {
+        type = "executable",
+        command = "arm-none-eabi-gdb",
+        args = { "--quiet", "--nx", "--interpreter=dap", "--eval-command", "set print pretty on" },
+    }
 
     -- NOTE: filetype configurations
     dap.configurations.cuda = {
@@ -105,8 +115,73 @@ local function setup_debugging()
             end,
             cwd = "${workspaceFolder}",
         },
-    })
 
+        {
+            name = "STM32：连接 OpenOCD",
+            type = "arm_gdb",
+            request = "attach",
+
+            target = "127.0.0.1:3333",
+
+            -- ELF 用于读取符号、源码位置和变量类型
+            program = function()
+                local path = vim.fn.input(
+                    "ELF 文件路径：",
+                    vim.fn.getcwd() .. "/build/Debug/",
+                    "file"
+                )
+
+                if path == "" then
+                    return dap.ABORT
+                end
+
+                path = vim.fn.fnamemodify(path, ":p")
+
+                if vim.fn.filereadable(path) ~= 1 then
+                    vim.notify("ELF 文件不存在：" .. path, vim.log.levels.ERROR)
+                    return dap.ABORT
+                end
+
+                return path
+            end,
+        },
+    })
+    dap.configurations.rust = {
+        {
+            name = "Launch",
+            type = "rust-gdb",
+            request = "launch",
+            program = function()
+                return vim.fn.input('Path to executable: ', vim.fn.getcwd() .. '/', 'file')
+            end,
+            args = {}, -- provide arguments if needed
+            cwd = "${workspaceFolder}",
+            stopAtBeginningOfMainSubprogram = false,
+        },
+        {
+            name = "Select and attach to process",
+            type = "rust-gdb",
+            request = "attach",
+            program = function()
+                return vim.fn.input('Path to executable: ', vim.fn.getcwd() .. '/', 'file')
+            end,
+            pid = function()
+                local name = vim.fn.input('Executable name (filter): ')
+                return require("dap.utils").pick_process({ filter = name })
+            end,
+            cwd = "${workspaceFolder}"
+        },
+        {
+            name = "Attach to gdbserver :1234",
+            type = "rust-gdb",
+            request = "attach",
+            target = "localhost:1234",
+            program = function()
+                return vim.fn.input('Path to executable: ', vim.fn.getcwd() .. '/', 'file')
+            end,
+            cwd = '${workspaceFolder}'
+        }
+    }
     -- C 与 C++ 共用同一批 launch/attach 配置（适配器与选项完全相同）。
     -- 必须在 list_extend 之后赋值：c 与 cpp 共享同一个表，后续追加两者都可见。
     dap.configurations.c = dap.configurations.cpp
@@ -191,7 +266,8 @@ local function setup_debugging()
     })
     dap.configurations.qmt = dap.configurations.python
 
-    require("nvim-dap-virtual-text").setup()
+
+    require("nvim-dap-virtual-text").setup({})
     local ok, noice = pcall(require, "noice")
     if ok then
         noice.setup()

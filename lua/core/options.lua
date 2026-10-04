@@ -50,3 +50,5 @@ vim.g.maplocalleader = "\\"
 vim.opt.hidden = true
 
 vim.opt.formatoptions:remove({ "r", "o" })
+vim.opt.shell = "fish"
+vim.opt.shellcmdflag = "-c"
