@@ -23,10 +23,10 @@ vim.api.nvim_create_autocmd("BufEnter", {
             require("mini.git").setup()
             vim.keymap.set("n", "<leader>ga", function()
                 vim.cmd("Git add %")
-                vim.notify("已经追踪当前文件")
+                vim.notify("已经追踪当前文件", vim.log.levels.INFO)
             end, { desc = "git add 当前缓冲区" })
 
-            vim.keymap.set("n", "<leader>gA", "<cmd>Git add .<cr>", { desc = "git add 当前缓冲区" })
+            vim.keymap.set("n", "<leader>gA", "<cmd>Git add .<cr>", { desc = "追踪当前项目所有文件" })
 
             vim.keymap.set("n", "<leader>gc", function()
                 vim.ui.input({ prompt = "Commit msg: " }, function(msg)
@@ -35,9 +35,8 @@ vim.api.nvim_create_autocmd("BufEnter", {
                         return
                     end
 
-                    local escaped_msg = vim.fn.shellescape(msg)
 
-                    vim.cmd("Git commit -m " .. escaped_msg)
+                    vim.cmd("Git commit -m " .. msg)
                 end)
             end, { desc = "git commit" })
         end

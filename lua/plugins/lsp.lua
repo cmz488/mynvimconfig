@@ -1,3 +1,6 @@
+vim.pack.add {
+    { src = 'https://github.com/neovim/nvim-lspconfig' },
+}
 require("core.mason-path").ensure()
 
 -- 诊断显示。原先在 lua/core/lsp.lua，该文件从未被加载、且依赖不存在的
@@ -231,7 +234,7 @@ vim.api.nvim_create_autocmd("LspAttach", {
 
         vim.keymap.set("n", "K", vim.lsp.buf.hover, opts)
         vim.keymap.set("n", "gr", vim.lsp.buf.references, opts)
-        vim.keymap.set("n", "<leader>rn", vim.lsp.buf.rename, opts)
+        vim.keymap.set("n", "<leader>cr", vim.lsp.buf.rename, opts)
         vim.keymap.set("n", "<leader>ca", vim.lsp.buf.code_action, opts)
         vim.keymap.set("n", "<leader>cf", function()
             vim.lsp.buf.format({ async = true })

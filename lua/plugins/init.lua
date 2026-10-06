@@ -39,3 +39,6 @@ require("plugins.TODO-comment")
 require("plugins.treesitter")
 require("plugins.dap")
 require("plugins.cmake")
+require("plugins.emberprobe")
+
+require("plugins.mini")

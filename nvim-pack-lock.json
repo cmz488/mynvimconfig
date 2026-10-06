@@ -40,6 +40,10 @@
       "rev": "fbdb48c2ed45f4a8293d0d483f7730d24467ccb6",
       "src": "https://github.com/theHamsta/nvim-dap-virtual-text"
     },
+    "emberprobe": {
+      "rev": "b38c68dad2d4a62de21fb2a2ebe2c6068c6aa9eb",
+      "src": "file:///home/cmz488/Projects/emberprobe.nvim"
+    },
     "fzf": {
       "rev": "d5c12c6d72ed84554f0f8dacb84f20da094b6a2d",
       "src": "https://github.com/ibhagwan/fzf-lua"
@@ -51,6 +55,10 @@
     "markview": {
       "rev": "190bb227c9d3eb4451b81fa16ea3d2efde2d67c5",
       "src": "https://github.com/OXY2DEV/markview.nvim"
+    },
+    "mini.nvim": {
+      "rev": "6f0cd5049f414932ba55a5d6f3282a59d55c71a3",
+      "src": "https://github.com/nvim-mini/mini.nvim"
     },
     "nio": {
       "rev": "edcc181a875301dd21840189aa2f2f9ad69fc172",
@@ -67,6 +75,10 @@
     "nvim-icon": {
       "rev": "58447c1fca354bbf184425e4a8d01deecbd6f3c4",
       "src": "https://github.com/nvim-tree/nvim-web-devicons"
+    },
+    "nvim-lspconfig": {
+      "rev": "910f0c4d46aa186641518395bc7e6fffb4d23baf",
+      "src": "https://github.com/neovim/nvim-lspconfig"
     },
     "nvim-tree": {
       "rev": "478c69c0fe253caea88de9c5e138bfa77395a59a",
