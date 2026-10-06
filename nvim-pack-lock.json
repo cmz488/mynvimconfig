@@ -56,6 +56,10 @@
       "rev": "190bb227c9d3eb4451b81fa16ea3d2efde2d67c5",
       "src": "https://github.com/OXY2DEV/markview.nvim"
     },
+    "milli.nvim": {
+      "rev": "b69890078dfde44cf71d192bbb02027f81aff1b1",
+      "src": "https://github.com/Amansingh-afk/milli.nvim"
+    },
     "mini.nvim": {
       "rev": "6f0cd5049f414932ba55a5d6f3282a59d55c71a3",
       "src": "https://github.com/nvim-mini/mini.nvim"

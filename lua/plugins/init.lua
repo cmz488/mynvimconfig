@@ -28,6 +28,7 @@ require("plugins.fzf")
 require("plugins.which-key")
 require("plugins.lsp")
 
+require("plugins.mini")
 require("plugins.snacks")
 require("plugins.nvim-tree")
 require("plugins.bufferline")
@@ -40,5 +41,3 @@ require("plugins.treesitter")
 require("plugins.dap")
 require("plugins.cmake")
 require("plugins.emberprobe")
-
-require("plugins.mini")

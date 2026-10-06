@@ -1,3 +1,9 @@
+vim.pack.add({
+    "https://github.com/Amansingh-afk/milli.nvim"
+})
+require("milli").snacks({ splash = "neovim", loop = true })
+local splash = require("milli").load({ splash = "neovim" })
+
 return {
     enabled = true,
 
@@ -6,14 +12,15 @@ return {
 
     preset = {
         -- 自定义 Logo
-        header = [[
-    ███╗   ██╗██╗   ██╗██╗███╗   ███╗
-    ████╗  ██║██║   ██║██║████╗ ████║
-    ██╔██╗ ██║██║   ██║██║██╔████╔██║
-    ██║╚██╗██║╚██╗ ██╔╝██║██║╚██╔╝██║
-    ██║ ╚████║ ╚████╔╝ ██║██║ ╚═╝ ██║
-    ╚═╝  ╚═══╝  ╚═══╝  ╚═╝╚═╝     ╚═╝
-        ]],
+        --     header = [[
+        -- ███╗   ██╗ ██╗   ██╗ ██╗ ███╗   ███╗
+        -- ████╗  ██║ ██║   ██║ ██║ ████╗ ████║
+        -- ██╔██╗ ██║ ██║   ██║ ██║ ██╔████╔██║
+        -- ██║╚██╗██║ ╚██╗ ██╔╝ ██║ ██║╚██╔╝██║
+        -- ██║ ╚████║  ╚████╔╝  ██║ ██║ ╚═╝ ██║
+        -- ╚═╝  ╚═══╝   ╚═══╝   ╚═╝ ╚═╝     ╚═╝
+        --     ]],
+        header = table.concat(splash.frames[1], "\n"),
 
         -- 首页快捷键
         keys = {
@@ -69,8 +76,7 @@ return {
     -- 首页布局
     sections = {
         { section = "header", padding = 1 },
-
-        { section = "keys",   gap = 1,    padding = 1 },
+        { section = "keys",   gap = 1,    padding = 1, pane = 1 },
 
         {
             icon = " ",
@@ -79,6 +85,7 @@ return {
             limit = 5,
             indent = 2,
             padding = 1,
+            pane = 1
         },
 
         {
@@ -88,6 +95,8 @@ return {
             limit = 5,
             indent = 2,
             padding = 1,
+
+            pane = 1
         },
 
         {
@@ -101,6 +110,8 @@ return {
             height = 5,
             padding = 1,
             ttl = 300,
+            pane = 1
+
         },
     },
 }
