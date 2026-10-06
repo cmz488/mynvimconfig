@@ -26,7 +26,10 @@ vim.api.nvim_create_autocmd("BufEnter", {
                 vim.notify("已经追踪当前文件", vim.log.levels.INFO)
             end, { desc = "git add 当前缓冲区" })
 
-            vim.keymap.set("n", "<leader>gA", "<cmd>Git add .<cr>", { desc = "追踪当前项目所有文件" })
+            vim.keymap.set("n", "<leader>gA", function()
+                vim.cmd("Git add .")
+                vim.notify("已经追踪当前项目所有文件", vim.log.levels.INFO)
+            end, { desc = "追踪当前项目所有文件" })
 
             vim.keymap.set("n", "<leader>gc", function()
                 vim.ui.input({ prompt = "Commit msg: " }, function(msg)
@@ -34,8 +37,6 @@ vim.api.nvim_create_autocmd("BufEnter", {
                         vim.notify("Commit 已取消或消息为空", vim.log.levels.WARN)
                         return
                     end
-
-
                     vim.cmd("Git commit -m " .. msg)
                 end)
             end, { desc = "git commit" })
@@ -45,3 +46,11 @@ vim.api.nvim_create_autocmd("BufEnter", {
 
 --- @mini.surround config
 require('mini.surround').setup()
+
+--- @mini.move config
+--- 移动文字
+require('mini.move').setup()
+
+
+--- @mini.move config
+require("mini.ai").setup()
