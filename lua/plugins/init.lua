@@ -21,7 +21,9 @@ vim.pack.add({
     gh("xiyaowong/transparent.nvim", "transparent"),
     gh("catppuccin/nvim", "catppuccin"),
     gh("windwp/nvim-autopairs", "autopairs"),
-    gh("OXY2DEV/markview.nvim", "markview")
+    gh("OXY2DEV/markview.nvim", "markview"),
+    -- 暴露编辑器状态给 pi 的 /ide(/tmp/pi-ide/<pid>.json),plugin/pi-ide.lua 自带 setup
+    gh("Andy8647/pi-ide-context", "pi-ide-context")
 })
 require("plugins.theme")
 require("plugins.snacks")

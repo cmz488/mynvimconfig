@@ -108,6 +108,10 @@
       "rev": "a93d9f6d6defdac4bcd6d2c8ba988650e42e0a0e",
       "src": "https://github.com/stevearc/overseer.nvim"
     },
+    "pi-ide-context": {
+      "rev": "4ddaab2a0170c8c512ae9ada23d8d3496b6e799f",
+      "src": "https://github.com/Andy8647/pi-ide-context"
+    },
     "plenary.nvim": {
       "rev": "74b06c6c75e4eeb3108ec01852001636d85a932b",
       "src": "https://github.com/nvim-lua/plenary.nvim"
