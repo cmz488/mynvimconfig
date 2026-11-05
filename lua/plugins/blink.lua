@@ -113,6 +113,22 @@ bk.setup({
         nerd_font_variant = "mono", -- 使用等宽 Nerd Font 图标
 
     },
+    completion = {
+        menu = {
+            border = "rounded", -- 补全菜单的边框
+            scrollbar = false,  -- 禁用滚动条指示器
+        },
+        documentation = {
+            window = {
+                border = "rounded", -- 文档窗口的边框
+            },
+        },
+    },
+    signature = {
+        window = {
+            border = "rounded", -- 签名帮助窗口的边框
+        },
+    },
     sources = {
         -- 补全来源：LSP、文件路径、代码片段、当前缓冲区
         default = { "lsp", "path", "snippets", "buffer" },
@@ -142,4 +158,5 @@ bk.setup({
     keymap = {
         preset = "super-tab",
     },
+
 })

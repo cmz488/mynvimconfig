@@ -46,14 +46,14 @@ return {
                     Snacks.picker.grep()
                 end,
             },
-            {
-                icon = " ",
-                key = "r",
-                desc = "最近文件",
-                action = function()
-                    Snacks.picker.recent()
-                end,
-            },
+            -- {
+            --     icon = " ",
+            --     key = "r",
+            --     desc = "最近文件",
+            --     action = function()
+            --         Snacks.picker.recent()
+            --     end,
+            -- },
             {
                 icon = " ",
                 key = "c",

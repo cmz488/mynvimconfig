@@ -17,8 +17,7 @@ local function setup_debugging()
 
     -- 停止/切换栈帧时优先使用源码窗口。默认 uselast 可能选中另一个 dapui
     -- 面板；其 force_buffers 会恢复面板内容，导致源码行号被用于短面板而越界。
-    -- 未显示的源码用新 split 打开，不占用 Watches/Breakpoints 等面板。
-    dap.defaults.fallback.switchbuf = "useopen,split"
+    dap.defaults.fallback.switchbuf = 'usevisible,usetab,uselast'
 
     -- NOTE: configure adapters
     -- C/C++ 统一使用 gdb 自带的 DAP 服务器（gdb >= 14 的 --interpreter=dap），
@@ -50,6 +49,20 @@ local function setup_debugging()
         type = "executable",
         command = "arm-none-eabi-gdb",
         args = { "--quiet", "--nx", "--interpreter=dap", "--eval-command", "set print pretty on" },
+    }
+
+    -- probe-rs：ESP32 系列（esp-hal/embassy）内置 USB-JTAG 调试。
+    -- adapter 名字故意用 "probe-rs-debug"：与 VSCode 扩展一致，这样项目里的
+    -- .vscode/launch.json 可以被两个编辑器原样共用（nvim-dap 会自动读取它）。
+    -- 具体 launch 参数（chip / coreConfigs / flashingConfig）写在项目的 launch.json 里。
+    dap.adapters["probe-rs-debug"] = {
+        type = "server",
+        port = "${port}",
+        executable = {
+            command = "probe-rs",
+            -- --single-session：会话结束即退出，避免残留进程占用端口
+            args = { "dap-server", "--port", "${port}", "--single-session" },
+        },
     }
 
     -- NOTE: filetype configurations
@@ -312,6 +325,33 @@ local function setup_debugging()
         dap.set_breakpoint(input)
     end, { desc = 'DAP: Conditional Breakpoint' })
     vim.keymap.set('n', '<leader>dD', dap.clear_breakpoints, { desc = 'DAP: Clear Breakpoints' })
+
+    vim.keymap.set('n', '<leader>dj', dap.down, { desc = 'DAP: Frame down' })
+    vim.keymap.set('n', '<leader>dk', dap.up, { desc = 'DAP: Frame up' })
+    vim.keymap.set('n', '<leader>dl', dap.run_last, { desc = 'DAP: Run last' })
+    vim.keymap.set('n', '<leader>dL', function()
+        dap.set_breakpoint(nil, nil, vim.fn.input('Log point: '))
+    end, { desc = 'DAP: Log point' })
+    vim.keymap.set('n', '<leader>dX', dap.list_breakpoints, { desc = 'DAP: List breakpoints' })
+    vim.keymap.set('n', '<leader>dS', dap.session, { desc = 'DAP: Session info' })
+    vim.keymap.set('n', '<leader>dT', function()
+        dap.terminate({}, { terminateDebuggee = true })
+    end, { desc = 'DAP: Terminate' })
+    vim.keymap.set('n', '<leader>dp', function()
+        require('dap.ui.widgets').preview() -- 光标处表达式预览
+    end, { desc = 'DAP: Preview expression' })
+    -- nvim-dap 不执行 launch.json 的 preLaunchTask（那是 VSCode 的任务系统）。
+    -- 用这个等效：先 cargo build，成功后再启动/继续调试。
+    vim.api.nvim_create_user_command('DapCargoBuild', function()
+        vim.notify('cargo build ...', vim.log.levels.INFO)
+        local out = vim.system({ 'cargo', 'build' }, { cwd = vim.fn.getcwd(), text = true }):wait()
+        if out.code ~= 0 then
+            vim.notify('cargo build 失败：\n' .. (out.stderr or ''), vim.log.levels.ERROR)
+            return
+        end
+        dap.continue()
+    end, { desc = 'cargo build 后启动调试（等价于 preLaunchTask）' })
+    vim.keymap.set('n', '<leader>dG', '<cmd>DapCargoBuild<CR>', { desc = 'DAP: Build + Debug' })
 
     require("plugins.dapui").setup()
     cleanup.setup()

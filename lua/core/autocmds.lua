@@ -1,5 +1,7 @@
 require("core.ime")
 
+local buffers = require("core.buffers")
+
 local group = vim.api.nvim_create_augroup(
     "UserConfig",
     { clear = true }
@@ -98,30 +100,8 @@ local saf_group = vim.api.nvim_create_augroup("AutoSaveAndFormat", { clear = tru
 -- 特殊缓冲区（nvim-tree、终端、quickfix、无名缓冲区）若被写入，轻则在
 -- 工作目录留下垃圾文件，重则与插件内部缓冲区重名（nvim-tree 的缓冲区名
 -- 形如 NvimTree_<tab>），导致插件初始化失败（E95）。
-local function is_file_buffer(buf)
-    if not vim.api.nvim_buf_is_valid(buf) then
-        return false
-    end
-
-    -- 跳过 nofile/terminal/prompt/quickfix 等特殊缓冲区
-    if vim.bo[buf].buftype ~= "" then
-        return false
-    end
-
-    local name = vim.api.nvim_buf_get_name(buf)
-
-    -- 跳过无名缓冲区
-    if name == "" then
-        return false
-    end
-
-    -- 跳过与 nvim-tree 内部缓冲区同名（NvimTree_<数字>）的文件
-    if vim.fn.fnamemodify(name, ":t"):match("^NvimTree_%d+$") then
-        return false
-    end
-
-    return true
-end
+-- 判定逻辑与删除缓冲区时的窗口处理共用，见 core/buffers.lua。
+local is_file_buffer = buffers.is_file_buffer
 
 vim.api.nvim_create_autocmd("BufLeave", {
     group = saf_group,
@@ -156,4 +136,5 @@ vim.api.nvim_create_autocmd("FileType", {
     end,
 })
 
-
+-- 删除缓冲区后不要把焦点丢给 nvim-tree 侧栏（见 core/buffers.lua）
+buffers.setup()

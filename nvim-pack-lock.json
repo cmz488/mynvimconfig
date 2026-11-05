@@ -44,6 +44,14 @@
       "rev": "b38c68dad2d4a62de21fb2a2ebe2c6068c6aa9eb",
       "src": "file:///home/cmz488/Projects/emberprobe.nvim"
     },
+    "emberprobe.nvim": {
+      "rev": "c1a16aee26f880477890361877dced36064f3f59",
+      "src": "file:///home/cmz488/Projects/web_file/emberprobe"
+    },
+    "flash.nvim": {
+      "rev": "5f0f270fdc7c5b0c21d903ee85b9cb06f2ac636a",
+      "src": "https://github.com/folke/flash.nvim"
+    },
     "fzf": {
       "rev": "d5c12c6d72ed84554f0f8dacb84f20da094b6a2d",
       "src": "https://github.com/ibhagwan/fzf-lua"

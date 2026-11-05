@@ -11,25 +11,6 @@ vim.diagnostic.config({
     float = { source = true },
 })
 
--- 所有 server 都用 Neovim 内置的 vim.lsp.config / vim.lsp.enable 描述，
--- 不引入 nvim-lspconfig：cmd + filetypes（+ root_markers）齐备即可自足，
--- lua_ls 本来就是这么工作的。
---
--- cmd 里的可执行文件由 PATH 解析，只装在 mason 里的 server
--- （marksman / vtsls / neocmakelsp 等）依赖上面那次 core.mason-path.ensure()。
---
--- 各 server 的 cmd / filetypes / root_markers 取自 nvim-lspconfig 的
--- lsp/<name>.lua，并把 yamlls、jsonls 的动态 cmd（优先使用项目内
--- node_modules/.bin）简化为静态 cmd；需要那个行为时可改回函数形式。
--- Rust：不使用 mise 的 shim（它代理的 toolchain 里没有 rust-analyzer，调用直接 exit 1）。
--- 按 ~/.cargo/env.fish 的既有顺序，直接指定真正的 rustup 目录：
---   CARGO_HOME  = ~/.cargo    （rustup 自己装的 shim + cargo 全局 bin）
---   RUSTUP_HOME = ~/.rustup   （toolchain 实际所在）
--- cmd 用绝对路径调用 ~/.cargo/bin/rust-analyzer（rustup shim），绕开 PATH 上比它更靠前
--- 的 mise shim；cmd_env.PATH 前置 ~/.cargo/bin，使 rust-analyzer 派生出的
--- rustc / cargo / rustfmt 也来自同一个 toolchain —— 于是 sysroot 是
--- ~/.rustup/toolchains/<默认 toolchain>（自带 rust-src），不会再报
--- "can't load standard library from sysroot /usr"。
 local rust_home = vim.env.HOME or ""
 local rust_cargo_home = vim.env.CARGO_HOME or vim.fs.joinpath(rust_home, ".cargo")
 local rust_rustup_home = vim.env.RUSTUP_HOME or vim.fs.joinpath(rust_home, ".rustup")
@@ -41,13 +22,38 @@ end
 
 local path_sep = vim.fn.has("win32") == 1 and ";" or ":"
 
+-- clangd 只会执行 --query-driver 白名单里的编译器去读取它的系统头与 target，
+-- 白名单外的编译器会被跳过（编译命令仍然生效，但拿不到该工具链的系统头）。
+-- 因此白名单必须覆盖 compile_commands.json 里实际出现的编译器：
+--   ROS2 包用 /usr/bin/cc、/usr/bin/c++；
+--   STM32 工程用 arm-none-eabi-gcc/g++（PATH 里 /usr/bin 在前时是 Arch 的
+--   arm-none-eabi-gcc 包，在 CLion 里可能是 STM32CubeCLT 自带的那套，两个都要
+--   白名单；实测加上之后 clangd 才会输出
+--   "got includes: .../arm-none-eabi/include/c++/..." 与 "got target").
+local stm32_cubeclt = vim.fs.joinpath(vim.env.HOME or "", "st")
+local clangd_query_driver = table.concat({
+    "/usr/bin/cc",
+    "/usr/bin/c++",
+    "/usr/bin/gcc*",
+    "/usr/bin/g++*",
+    "/usr/bin/clang*",
+    "/usr/bin/arm-none-eabi-g*",
+    stm32_cubeclt .. "/stm32cubeclt_*/GNU-tools-for-STM32/bin/arm-none-eabi-g*",
+}, ",")
+
 local servers = {
     clangd = {
         cmd = {
             "clangd",
             "--background-index",
             "--clang-tidy",
-            "--query-driver=/usr/bin/arm-none-eabi-*",
+            "--query-driver=" .. clangd_query_driver,
+        },
+        -- Arch 的 gcc/g++ 按 LANG 输出中文，clangd 解析它 `-E -v` 的输出时找不到
+        -- 英文起始标记会报 "System include extraction: start marker not found" 并
+        -- 放弃这次查询，强制 C locale 才能拿到与编译器一致的系统头列表。
+        cmd_env = {
+            LC_ALL = "C",
         },
         filetypes = { "c", "cpp" },
         root_markers = {

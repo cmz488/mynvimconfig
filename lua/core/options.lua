@@ -15,6 +15,7 @@ opt.termguicolors = true
 opt.signcolumn = "yes"
 opt.cursorline = true
 opt.scrolloff = 8
+vim.opt.winborder = "rounded"
 
 -- 搜索
 opt.ignorecase = true
@@ -52,3 +53,5 @@ vim.opt.hidden = true
 vim.opt.formatoptions:remove({ "r", "o" })
 vim.opt.shell = "fish"
 vim.opt.shellcmdflag = "-c"
+
+opt.foldexpr = "nvim_treesitter#foldexpr()"

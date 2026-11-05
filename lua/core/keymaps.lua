@@ -2,6 +2,7 @@ local map = vim.keymap.set
 local fzf = require("fzf-lua")
 local tree = require("nvim-tree.api")
 local Snacks = require("snacks")
+local buffers = require("core.buffers")
 -- 文件
 map("n", "<leader>fs", "<cmd>w<cr>", {
     desc = "保存文件",
@@ -20,8 +21,22 @@ map("n", "<leader>bp", "<cmd>bprevious<cr>", {
     desc = "上一个缓冲区",
 })
 
-map("n", "<leader>bd", "<cmd>bdelete<cr>", {
-    desc = "关闭缓冲区",
+map("n", "<leader>bd", function()
+    buffers.delete()
+end, {
+    desc = "关闭当前缓冲区（保持窗口）",
+})
+
+map("n", "<leader>bl", "<cmd>BufferLineCloseLeft<cr>", {
+    desc = "关闭左侧缓冲区",
+})
+
+map("n", "<leader>br", "<cmd>BufferLineCloseRight<cr>", {
+    desc = "关闭右侧缓冲区",
+})
+
+map("n", "<leader>bo", "<cmd>BufferLineCloseOthers<cr>", {
+    desc = "关闭其它缓冲区",
 })
 
 -- 窗口
@@ -106,7 +121,7 @@ map("n", "<S-l>", "<cmd>BufferLineCycleNext<cr>",
     })
 
 
-map("n", "<C-s>", "<cmd>w<cr>", { desc = "文件保存" })
+map({ "v", "n", "i" }, "<C-s>", "<cmd>w<cr>", { desc = "文件保存" })
 
 
 map("n", "<leader>bb", "<cmd>BufferLinePick<cr>", { desc = "通过首字母自动跳转到对应buffer" })
