@@ -37,6 +37,8 @@ local opts = {
                 NormalFloat = { bg = "NONE" },
                 FloatBorder = { fg = "#f0b8c0", bg = "NONE", style = { "bold" } },
                 FloatTitle = { fg = "#f0b8c0", bg = "NONE", style = { "bold" } },
+                -- 内联提示跟 hover 边框同色，不要背景块
+                LspInlayHint = { fg = "#f0b8c0", bg = "NONE" },
                 RenderMarkdownCode = { bg = mocha.crust },
                 Pmenu = { bg = mocha.surface0 },
                 Comment = { bg = nil },

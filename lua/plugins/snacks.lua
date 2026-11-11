@@ -95,12 +95,13 @@ require("noice").setup({
 
     -- noice 自己接管了 vim.lsp.buf.hover / signatureHelp，
     -- 不走 vim.lsp.handlers，所以边框只能在这里配。
-    -- nui 的圆角字符是细线，把直边换成粗线（━ ┃）来加厚。
+    -- 用 nui 自带的 rounded：JetBrains Maple Mono 的圆角（╭）本身是 light 粗细，
+    -- 跟 heavy 直边（━ ┃）混搭会在接缝处断粗细，圆角就显得薄。
     -- padding 只用 1 格：再大文字就会和边框显得疏远。
     views = {
         hover = {
             border = {
-                style = { "╭", "━", "╮", "┃", "╯", "━", "╰", "┃" },
+                style = "rounded",
                 padding = { top = 0, bottom = 0, left = 1, right = 1 },
             },
             -- 边框窗口的 Normal 也指向 NormalFloat，
@@ -109,7 +110,7 @@ require("noice").setup({
         },
         signature = {
             border = {
-                style = { "╭", "━", "╮", "┃", "╯", "━", "╰", "┃" },
+                style = "rounded",
                 padding = { top = 0, bottom = 0, left = 1, right = 1 },
             },
             win_options = { winhighlight = "Normal:NormalFloat,FloatBorder:FloatBorder" },

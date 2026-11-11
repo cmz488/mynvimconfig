@@ -17,6 +17,10 @@ local border_chars = {
     { "│", "FloatBorder" },
 }
 
+-- 内联提示默认开启，否则主题里给它配的粉色永远看不到。
+-- <leader>th 仍按 buffer 单独开关。
+vim.lsp.inlay_hint.enable(true)
+
 -- 诊断显示。原先在 lua/core/lsp.lua，该文件从未被加载、且依赖不存在的
 -- lua/plugins/snacks.lua，已删除，其中的能力并入本文件。
 vim.diagnostic.config({
