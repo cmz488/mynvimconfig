@@ -29,7 +29,7 @@ sn.setup({
     input = { enabled = true },
 
     -- 搜索工具
-    picker = { enabled = true },
+    picker = { enabled = true, presets = "telescope" },
 
     -- 通知
     notifier = {

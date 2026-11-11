@@ -8,6 +8,8 @@ require("core.mason-path").ensure()
 vim.diagnostic.config({
     virtual_text = true,
     virtual_lines = false,
+    severity_sort = true,     -- 列表和 virtual text 都按严重度排序
+    update_in_insert = false, -- 插入模式下不刷新诊断，避免光标乱跳
     float = { source = true },
 })
 
@@ -22,14 +24,6 @@ end
 
 local path_sep = vim.fn.has("win32") == 1 and ";" or ":"
 
--- clangd 只会执行 --query-driver 白名单里的编译器去读取它的系统头与 target，
--- 白名单外的编译器会被跳过（编译命令仍然生效，但拿不到该工具链的系统头）。
--- 因此白名单必须覆盖 compile_commands.json 里实际出现的编译器：
---   ROS2 包用 /usr/bin/cc、/usr/bin/c++；
---   STM32 工程用 arm-none-eabi-gcc/g++（PATH 里 /usr/bin 在前时是 Arch 的
---   arm-none-eabi-gcc 包，在 CLion 里可能是 STM32CubeCLT 自带的那套，两个都要
---   白名单；实测加上之后 clangd 才会输出
---   "got includes: .../arm-none-eabi/include/c++/..." 与 "got target").
 local stm32_cubeclt = vim.fs.joinpath(vim.env.HOME or "", "st")
 local clangd_query_driver = table.concat({
     "/usr/bin/cc",
@@ -40,8 +34,19 @@ local clangd_query_driver = table.concat({
     "/usr/bin/arm-none-eabi-g*",
     stm32_cubeclt .. "/stm32cubeclt_*/GNU-tools-for-STM32/bin/arm-none-eabi-g*",
 }, ",")
-
+-- qml lsp peizhi
+local qmlls_bin = "/usr/lib/qt6/bin/qmlls"
 local servers = {
+    qmlls = {
+        cmd = { qmlls_bin, "-I", "/usr/lib/qt6/qml" },
+        filetypes = {
+            "qml", "qmljs"
+        },
+        root_markers = {
+            "shell.qml", ".git"
+        },
+
+    },
     clangd = {
         cmd = {
             "clangd",
@@ -49,9 +54,6 @@ local servers = {
             "--clang-tidy",
             "--query-driver=" .. clangd_query_driver,
         },
-        -- Arch 的 gcc/g++ 按 LANG 输出中文，clangd 解析它 `-E -v` 的输出时找不到
-        -- 英文起始标记会报 "System include extraction: start marker not found" 并
-        -- 放弃这次查询，强制 C locale 才能拿到与编译器一致的系统头列表。
         cmd_env = {
             LC_ALL = "C",
         },
@@ -117,10 +119,6 @@ local servers = {
         root_markers = { ".marksman.toml", ".git" },
     },
 
-    -- 有意没有打开 YAML 的格式化（上游默认也是关闭）：
-    -- core/autocmds.lua 会在保存时对任何挂载了 LSP 的缓冲区执行
-    -- vim.lsp.buf.format，打开它意味着每次保存 YAML 都会被重写。
-    -- 需要时加 settings.yaml.format.enable = true。
     yamlls = {
         cmd = { "yaml-language-server", "--stdio" },
         filetypes = { "yaml", "yaml.docker-compose", "yaml.gitlab", "yaml.helm-values" },
@@ -152,7 +150,6 @@ local servers = {
     },
 
     neocmakelsp = {
-        -- 注意是子命令 stdio，不是 --stdio
         cmd = { "neocmakelsp", "stdio" },
         filetypes = { "cmake" },
         root_markers = { ".neocmake.toml", ".git", "build", "cmake" },
@@ -161,7 +158,7 @@ local servers = {
     rust_analyzer = {
         cmd = { rust_analyzer_bin },
         filetypes = { "rust" },
-        root_markers = { "Cargo.toml", "rust-project.json", ".git" },
+        root_markers = { "Cargo.toml", "rust-project.json", ".git", ".Cargo" },
         cmd_env = {
             CARGO_HOME = rust_cargo_home,
             RUSTUP_HOME = rust_rustup_home,
@@ -237,40 +234,14 @@ vim.api.nvim_create_autocmd("LspAttach", {
             buffer = event.buf,
             silent = true,
         }
-
+        -- 这里没有配置gr gd gD,走snacks的快捷键
         vim.keymap.set("n", "K", vim.lsp.buf.hover, opts)
-        vim.keymap.set("n", "gr", vim.lsp.buf.references, opts)
         vim.keymap.set("n", "<leader>cr", vim.lsp.buf.rename, opts)
         vim.keymap.set("n", "<leader>ca", vim.lsp.buf.code_action, opts)
         vim.keymap.set("n", "<leader>cf", function()
             vim.lsp.buf.format({ async = true })
         end, opts)
 
-        -- gd 走 fzf-lua 候选列表（只有一个结果时直接跳），gD 智能分屏后直接跳
-        vim.keymap.set("n", "gd", function()
-            local params = vim.lsp.util.make_position_params(0, "utf-8")
-            vim.lsp.buf_request(0, "textDocument/definition", params, function(_, result)
-                if not result or vim.tbl_isempty(result) then
-                    vim.notify("No definition found", vim.log.levels.INFO)
-                    return
-                end
-                require("fzf-lua").lsp_definitions()
-            end)
-        end, { buffer = event.buf, desc = "LSP: Goto Definition" })
-
-        vim.keymap.set("n", "gD", function()
-            local win = vim.api.nvim_get_current_win()
-            local width = vim.api.nvim_win_get_width(win)
-            local height = vim.api.nvim_win_get_height(win)
-
-            if 8 * width - 20 * height < 0 then
-                vim.cmd("split")
-            else
-                vim.cmd("vsplit")
-            end
-
-            vim.lsp.buf.definition()
-        end, { buffer = event.buf, desc = "LSP: Goto Definition (split)" })
 
         if client:supports_method("textDocument/documentSymbol") then
             vim.keymap.set("n", "[f", function()

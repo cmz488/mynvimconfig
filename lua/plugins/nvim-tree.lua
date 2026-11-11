@@ -12,17 +12,49 @@ tree.setup({
         auto_open = true,
     },
 
+    -- 树根跟随 cwd（core/autocmds.lua 会把 cwd 切到项目根）
     sync_root_with_cwd = true,
     respect_buf_cwd = true,
 
+    -- 焦点落到别的文件时，在树里定位到它
+    update_focused_file = {
+        enable = true,
+        update_root = {
+            enable = true,
+        },
+    },
+    -- 进入项目子目录时不把树根缩小到子目录，配合上面的 update_root 使用
+    prefer_startup_root = true,
+
     view = {
         side = "left",
-        width = 32,
+        -- 随窗口宽度自适应，不再固定 32 列
+        width = {
+            min = 24,
+            max = 40,
+            padding = 2,
+        },
     },
 
     renderer = {
         group_empty = true,
-        highlight_git = true,
+        -- 1.x 里这些都是 "none" | "icon" | "name" | "all"；
+        -- 旧版的布尔值会被 legacy 逻辑翻译成 "name"
+        highlight_git = "all",
+        highlight_diagnostics = "all",
+    },
+
+    -- 未保存标记、LSP 诊断图标都受各自 enable 开关控制，默认是关的
+    modified = {
+        enable = true,
+    },
+    diagnostics = {
+        enable = true,
+    },
+
+    -- 树内 m 打的书签默认重启即丢，持久化到 stdpath("data")/nvim-tree-bookmarks.json
+    bookmarks = {
+        persist = true,
     },
 
     filters = {
@@ -33,5 +65,5 @@ tree.setup({
             quit_on_open = false,
             resize_window = true,
         },
-    }
+    },
 })
