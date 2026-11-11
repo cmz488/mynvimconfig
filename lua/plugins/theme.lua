@@ -33,9 +33,10 @@ local opts = {
                 FlashCurrent = { bg = mocha.peach, fg = mocha.base },
                 FlashMatch = { bg = mocha.red, fg = mocha.base },
                 FlashLabel = { bg = mocha.teal, fg = mocha.base },
-                NormalFloat = { bg = mocha.mantle },
-                FloatBorder = { fg = mocha.blue, bg = mocha.mantle, style = { "bold" } },
-                FloatTitle = { fg = mocha.text, bg = mocha.mantle, style = { "bold" } },
+                -- 与 transparent_background 对齐：浮窗背景透明，只留边框
+                NormalFloat = { bg = "NONE" },
+                FloatBorder = { fg = "#f0b8c0", bg = "NONE", style = { "bold" } },
+                FloatTitle = { fg = "#f0b8c0", bg = "NONE", style = { "bold" } },
                 RenderMarkdownCode = { bg = mocha.crust },
                 Pmenu = { bg = mocha.surface0 },
                 Comment = { bg = nil },

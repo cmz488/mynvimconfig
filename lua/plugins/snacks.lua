@@ -95,20 +95,24 @@ require("noice").setup({
 
     -- noice 自己接管了 vim.lsp.buf.hover / signatureHelp，
     -- 不走 vim.lsp.handlers，所以边框只能在这里配。
-    -- nui 的圆角字符是细线，把直边换成粗线（━ ┃）来加厚，
-    -- padding 让文字和边框之间留出距离。
+    -- nui 的圆角字符是细线，把直边换成粗线（━ ┃）来加厚。
+    -- padding 只用 1 格：再大文字就会和边框显得疏远。
     views = {
         hover = {
             border = {
                 style = { "╭", "━", "╮", "┃", "╯", "━", "╰", "┃" },
-                padding = { top = 1, bottom = 1, left = 2, right = 2 },
+                padding = { top = 0, bottom = 0, left = 1, right = 1 },
             },
+            -- 边框窗口的 Normal 也指向 NormalFloat，
+            -- 不显式置空会留一层不透明的底色。
+            win_options = { winhighlight = "Normal:NormalFloat,FloatBorder:FloatBorder" },
         },
         signature = {
             border = {
                 style = { "╭", "━", "╮", "┃", "╯", "━", "╰", "┃" },
-                padding = { top = 0, bottom = 0, left = 2, right = 2 },
+                padding = { top = 0, bottom = 0, left = 1, right = 1 },
             },
+            win_options = { winhighlight = "Normal:NormalFloat,FloatBorder:FloatBorder" },
         },
     },
 })
