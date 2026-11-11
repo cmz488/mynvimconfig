@@ -92,4 +92,23 @@ require("noice").setup({
         bottom_search = false,
         long_message_to_split = true,
     },
+
+    -- noice 自己接管了 vim.lsp.buf.hover / signatureHelp，
+    -- 不走 vim.lsp.handlers，所以边框只能在这里配。
+    -- nui 的圆角字符是细线，把直边换成粗线（━ ┃）来加厚，
+    -- padding 让文字和边框之间留出距离。
+    views = {
+        hover = {
+            border = {
+                style = { "╭", "━", "╮", "┃", "╯", "━", "╰", "┃" },
+                padding = { top = 1, bottom = 1, left = 2, right = 2 },
+            },
+        },
+        signature = {
+            border = {
+                style = { "╭", "━", "╮", "┃", "╯", "━", "╰", "┃" },
+                padding = { top = 0, bottom = 0, left = 2, right = 2 },
+            },
+        },
+    },
 })

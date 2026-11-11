@@ -3,6 +3,20 @@ vim.pack.add {
 }
 require("core.mason-path").ensure()
 
+-- 诊断浮窗的边框。hover 和 signatureHelp 不在这里配：
+-- noice.nvim 直接替换了 vim.lsp.buf.hover / signature_help，
+-- 不走 vim.lsp.handlers，边框定义在 plugins/snacks.lua 的 views.hover。
+local border_chars = {
+    { "╭", "FloatBorder" },
+    { "─", "FloatBorder" },
+    { "╮", "FloatBorder" },
+    { "│", "FloatBorder" },
+    { "╯", "FloatBorder" },
+    { "─", "FloatBorder" },
+    { "╰", "FloatBorder" },
+    { "│", "FloatBorder" },
+}
+
 -- 诊断显示。原先在 lua/core/lsp.lua，该文件从未被加载、且依赖不存在的
 -- lua/plugins/snacks.lua，已删除，其中的能力并入本文件。
 vim.diagnostic.config({
@@ -10,7 +24,10 @@ vim.diagnostic.config({
     virtual_lines = false,
     severity_sort = true,     -- 列表和 virtual text 都按严重度排序
     update_in_insert = false, -- 插入模式下不刷新诊断，避免光标乱跳
-    float = { source = true },
+    float = {
+        source = true,
+        border = border_chars, -- 诊断浮动窗口也使用圆角边框
+    },
 })
 
 local rust_home = vim.env.HOME or ""
