@@ -1,10 +1,10 @@
--- 状态栏：单条全局栏（贴屏幕底边）+ 圆角模式胶囊 + 三级灰阶文字
+-- 状态栏：单条全局栏，底色透明（与 transparent_background 一致），
+-- 只在模式处保留一块柔和的色板，其余信息靠三级灰阶区分。
 vim.o.laststatus = 3
 
 local palette = {
-    crust = "#11111b",
-    mantle = "#181825",
     overlay0 = "#6c7086",
+    overlay1 = "#7f849c",
     subtext0 = "#a6adc8",
     text = "#cdd6f4",
     blue = "#89b4fa",
@@ -15,7 +15,9 @@ local palette = {
     teal = "#94e2d5",
 }
 
--- 模式色块不写死，按比例混进底板，得到"被染色玻璃"而不是实心色带
+-- 胶囊底色 = 模式色混进中性深色。太高的比例会让色块抢眼，
+-- 太低则和透明背景糊成一片。
+local CHIP_BASE = "#1b1b27"
 local CHIP_ALPHA = 0.2
 
 local function hex2rgb(hex)
@@ -43,14 +45,14 @@ local accents = {
 
 local chip = {}
 for mode, accent in pairs(accents) do
-    chip[mode] = blend(accent, palette.crust, CHIP_ALPHA)
+    chip[mode] = blend(accent, CHIP_BASE, CHIP_ALPHA)
 end
 
 local function theme_mode(mode)
     return {
         a = { fg = accents[mode], bg = chip[mode], gui = "bold" },
-        b = { fg = palette.subtext0, bg = palette.crust },
-        c = { fg = palette.text, bg = palette.crust },
+        b = { fg = palette.subtext0, bg = "NONE" },
+        c = { fg = palette.text, bg = "NONE" },
     }
 end
 
@@ -62,9 +64,9 @@ local theme = {
     command = theme_mode("command"),
     terminal = theme_mode("terminal"),
     inactive = {
-        a = { fg = palette.overlay0, bg = palette.mantle },
-        b = { fg = palette.overlay0, bg = palette.mantle },
-        c = { fg = palette.overlay0, bg = palette.mantle },
+        a = { fg = palette.overlay0, bg = "NONE" },
+        b = { fg = palette.overlay0, bg = "NONE" },
+        c = { fg = palette.overlay0, bg = "NONE" },
     },
 }
 
@@ -73,35 +75,6 @@ local function titleize(label)
     return (label:lower():gsub("(%a)([%w]*)", function(a, b)
         return a:upper() .. b
     end))
-end
-
--- 胶囊两端要跟着当前模式变色，所以颜色在渲染时求值
-local function current_accent()
-    local mode = vim.fn.mode(1):sub(1, 1)
-    local map = {
-        n = palette.blue,
-        i = palette.green,
-        v = palette.mauve,
-        V = palette.mauve,
-        ["\22"] = palette.mauve,
-        R = palette.red,
-        c = palette.peach,
-        t = palette.teal,
-    }
-    return map[mode] or palette.blue
-end
-
-local function cap(glyph)
-    return {
-        function()
-            return glyph
-        end,
-        padding = 0,
-        draw_empty = true,
-        color = function()
-            return { fg = blend(current_accent(), palette.crust, CHIP_ALPHA), bg = palette.crust }
-        end,
-    }
 end
 
 require("lualine").setup({
@@ -116,15 +89,7 @@ require("lualine").setup({
     },
     sections = {
         lualine_a = {
-            cap(""),
-            {
-                "mode",
-                fmt = function(s)
-                    return titleize(s)
-                end,
-                padding = { left = 1, right = 1 },
-            },
-            cap(""),
+            { "mode", fmt = titleize, padding = { left = 2, right = 2 } },
         },
         lualine_b = {
             { "branch", icon = "" },
@@ -144,14 +109,13 @@ require("lualine").setup({
         },
         lualine_y = {
             { "filetype", icons_enabled = false },
-            {
-                "encoding",
-                fmt = function(s)
-                    return s:lower()
-                end,
-            },
+            { "encoding", fmt = string.lower },
         },
-        lualine_z = { "location" },
+        -- z 段在 lualine 里映射到主题的 a（模式色板），这里显式改回透明，
+        -- 否则行号会顶着一块和模式胶囊同色的底。
+        lualine_z = {
+            { "location", color = { fg = palette.overlay1, bg = "NONE" } },
+        },
     },
     inactive_sections = {
         lualine_a = {},
