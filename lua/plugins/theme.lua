@@ -37,8 +37,9 @@ local opts = {
                 NormalFloat = { bg = "NONE" },
                 FloatBorder = { fg = "#f0b8c0", bg = "NONE", style = { "bold" } },
                 FloatTitle = { fg = "#f0b8c0", bg = "NONE", style = { "bold" } },
-                -- 内联提示跟 hover 边框同色，不要背景块
-                LspInlayHint = { fg = "#f0b8c0", bg = "NONE" },
+                -- 形参名提示只是辅助信息，不能和真实变量名争视觉。
+                -- blend 让前景和底色混合，得到真正的半透明灰。
+                LspInlayHint = { fg = "#a6adc8", bg = "NONE", blend = 50 },
                 RenderMarkdownCode = { bg = mocha.crust },
                 Pmenu = { bg = mocha.surface0 },
                 Comment = { bg = nil },
