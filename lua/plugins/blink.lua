@@ -129,6 +129,9 @@ bk.setup({
         },
     },
     signature = {
+        -- 签名窗口由 noice 渲染（自动触发和文档渲染都在那边），
+        -- blink 自己这个保持关闭，否则两个窗口会同时弹出。
+        enabled = false,
         window = {
             border = "rounded", -- 签名帮助窗口的边框
             winhighlight = "Normal:BlinkCmpSignatureHelp,FloatBorder:BlinkCmpSignatureHelpBorder",

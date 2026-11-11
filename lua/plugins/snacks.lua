@@ -108,19 +108,43 @@ require("noice").setup({
             -- 不显式置空会留一层不透明的底色。
             win_options = { winhighlight = "Normal:NormalFloat,FloatBorder:FloatBorder" },
         },
-        -- signature 继承 hover 的样式，只改位置：
-        -- anchor = SW 让窗口的底边对齐光标，row = -1 再抬一行，
-        -- 这样输入行本身不被遮住。
-        -- （noice 默认 auto 锚点会把窗口放在光标下方，正好盖住正在编辑的行）
+        -- signature 继承 hover 的样式，位置单独修正：
+        -- noice 的 anchor 是它自己的概念，nui 的 popup 根本不收 anchor 参数，
+        -- 所以这里的 anchor/position 只是传给 nui 的 NW 锚点用，
+        -- 真正的位置由下面 patch 的 update_options 按窗口高度算。
         signature = {
             view = "hover",
-            anchor = "SW",
-            position = { row = -1, col = 0 },
         },
     },
     lsp = {
-        -- 默认 signature 会回退到 documentation.view（即 hover），
-        -- 不显式指定的话上面 views.signature 的锚点不会生效。
+        -- signature 用 noice 自己的视图，位置在下面的 patch 修正。
         signature = { view = "signature" },
     },
 })
+
+-- signature 浮窗定位修正。
+-- noice 的 anchor 只是它自己的语义：nui 的 popup 不接受 anchor 参数，
+-- 所以窗口总是按 NW 向下展开；而 get_layout 又会把 position.row 的负值
+-- 当成「从屏幕底部算起的行号」，导致无论怎么配都靠不到光标边上。
+-- 这里在布局算完后用窗口真实高度反推：让浮窗底边（含边框）
+-- 恰好落在光标行的上一行。
+local NuiView = require("noice.view.nui")
+local update_options = NuiView.update_options
+function NuiView:update_options()
+    update_options(self)
+    if self._opts.view ~= "signature" then
+        return
+    end
+    local height = self._opts.size and self._opts.size.height
+    if type(height) ~= "number" then
+        return
+    end
+    self._opts.anchor = "NW"
+    -- 上方能容下整个浮窗（内容 + 上下边框）就贴着光标行放，
+    -- 否则退回下方，避免在文件顶部时盖住正在编辑的行。
+    if vim.fn.winline() - 1 >= height + 2 then
+        self._opts.position = { row = -(height + 1), col = 0 }
+    else
+        self._opts.position = { row = 2, col = 0 }
+    end
+end
