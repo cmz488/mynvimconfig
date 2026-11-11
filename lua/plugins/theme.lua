@@ -51,3 +51,22 @@ local opts = {
 
 cp.setup(opts)
 vim.cmd.colorscheme("catppuccin")
+
+-- blink.cmp 在 ColorScheme 事件里用 nvim_set_hl{default=true} 设自己的高亮，
+-- 会盖掉 highlight_overrides 里的同名定义（它执行得更晚）。
+-- 这里在 colorscheme 之后重设一遍，并去掉 default 才能真覆盖。
+-- 目的：补全菜单 / 文档 / 签名浮窗跟 hover 浮窗用同一套粉色边框 + 透明底。
+vim.api.nvim_create_autocmd("ColorScheme", {
+    group = vim.api.nvim_create_augroup("UserFloatStyle", { clear = true }),
+    callback = function()
+        local pink = "#f0b8c0"
+        vim.api.nvim_set_hl(0, "BlinkCmpMenuBorder", { fg = pink, bg = "NONE", bold = true })
+        vim.api.nvim_set_hl(0, "BlinkCmpMenu", { bg = "NONE" })
+        vim.api.nvim_set_hl(0, "BlinkCmpDocBorder", { fg = pink, bg = "NONE", bold = true })
+        vim.api.nvim_set_hl(0, "BlinkCmpDoc", { bg = "NONE" })
+        vim.api.nvim_set_hl(0, "BlinkCmpSignatureHelpBorder", { fg = pink, bg = "NONE", bold = true })
+        vim.api.nvim_set_hl(0, "BlinkCmpSignatureHelp", { bg = "NONE" })
+    end,
+})
+-- 当前 session 已经加载完 colorscheme，立即跑一次
+vim.api.nvim_exec_autocmds("ColorScheme", {})

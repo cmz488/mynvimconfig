@@ -117,16 +117,21 @@ bk.setup({
         menu = {
             border = "rounded", -- 补全菜单的边框
             scrollbar = false,  -- 禁用滚动条指示器
+            -- 跟 hover 浮窗统一：粉色边框、透明背景。
+            -- blink 自己会为这些组设默认链接，必须直接覆盖而不是链接。
+            winhighlight = "Normal:BlinkCmpMenu,FloatBorder:BlinkCmpMenuBorder,CursorLine:BlinkCmpMenuSelection,Search:None,CurSearch:None",
         },
         documentation = {
             window = {
                 border = "rounded", -- 文档窗口的边框
+                winhighlight = "Normal:BlinkCmpDoc,FloatBorder:BlinkCmpDocBorder,EndOfBuffer:BlinkCmpDoc,Separator:BlinkCmpDocSeparator",
             },
         },
     },
     signature = {
         window = {
             border = "rounded", -- 签名帮助窗口的边框
+            winhighlight = "Normal:BlinkCmpSignatureHelp,FloatBorder:BlinkCmpSignatureHelpBorder",
         },
     },
     sources = {

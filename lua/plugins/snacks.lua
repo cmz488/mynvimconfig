@@ -108,12 +108,19 @@ require("noice").setup({
             -- 不显式置空会留一层不透明的底色。
             win_options = { winhighlight = "Normal:NormalFloat,FloatBorder:FloatBorder" },
         },
+        -- signature 继承 hover 的样式，只改位置：
+        -- anchor = SW 让窗口的底边对齐光标，row = -1 再抬一行，
+        -- 这样输入行本身不被遮住。
+        -- （noice 默认 auto 锚点会把窗口放在光标下方，正好盖住正在编辑的行）
         signature = {
-            border = {
-                style = "rounded",
-                padding = { top = 0, bottom = 0, left = 1, right = 1 },
-            },
-            win_options = { winhighlight = "Normal:NormalFloat,FloatBorder:FloatBorder" },
+            view = "hover",
+            anchor = "SW",
+            position = { row = -1, col = 0 },
         },
+    },
+    lsp = {
+        -- 默认 signature 会回退到 documentation.view（即 hover），
+        -- 不显式指定的话上面 views.signature 的锚点不会生效。
+        signature = { view = "signature" },
     },
 })
