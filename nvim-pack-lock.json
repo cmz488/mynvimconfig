@@ -112,6 +112,10 @@
       "rev": "4ddaab2a0170c8c512ae9ada23d8d3496b6e799f",
       "src": "https://github.com/Andy8647/pi-ide-context"
     },
+    "pi.nvim": {
+      "rev": "77ff5a387c66d1707154f8451075abf3dd1f2042",
+      "src": "https://github.com/alex35mil/pi.nvim"
+    },
     "plenary.nvim": {
       "rev": "74b06c6c75e4eeb3108ec01852001636d85a932b",
       "src": "https://github.com/nvim-lua/plenary.nvim"

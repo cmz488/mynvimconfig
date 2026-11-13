@@ -23,7 +23,9 @@ vim.pack.add({
     gh("windwp/nvim-autopairs", "autopairs"),
     gh("OXY2DEV/markview.nvim", "markview"),
     -- 暴露编辑器状态给 pi 的 /ide(/tmp/pi-ide/<pid>.json),plugin/pi-ide.lua 自带 setup
-    gh("Andy8647/pi-ide-context", "pi-ide-context")
+    gh("Andy8647/pi-ide-context", "pi-ide-context"),
+    -- pi coding agent 的 Neovim 前端: chat/diff 审查/会话管理, 需本机 pi >= 1.3.0
+    gh("alex35mil/pi.nvim", "pi.nvim")
 })
 require("plugins.theme")
 require("plugins.snacks")
@@ -43,3 +45,4 @@ require("plugins.cmake")
 require("plugins.emberprobe")
 require("plugins.flash")
 require("plugins.which-key")
+require("plugins.pi")
