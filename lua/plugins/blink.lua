@@ -52,6 +52,12 @@ bk.setup({
 
     },
     completion = {
+        accept = {
+            auto_brackets = {
+                -- pi 提示词里的 /命令 是命令而非函数调用, 补 () 只会污染输入
+                blocked_filetypes = { "pi-chat-prompt" },
+            },
+        },
         menu = {
             border = "rounded", -- 补全菜单的边框
             scrollbar = false,  -- 禁用滚动条指示器
@@ -78,6 +84,13 @@ bk.setup({
     sources = {
         -- 补全来源：LSP、文件路径、代码片段、当前缓冲区
         default = { "lsp", "path", "snippets", "buffer" },
+        -- pi 提示词窗口只留 pi 自家来源: @ 引用文件、/ 触发命令
+        per_filetype = {
+            ["pi-chat-prompt"] = { "pi" },
+        },
+        providers = {
+            pi = { name = "Pi", module = "pi.completion.blink" },
+        },
     },
     fuzzy = {
         -- 使用rust
